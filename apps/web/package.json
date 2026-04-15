@@ -1,0 +1,36 @@
+{
+  "name": "@coin-economy/web",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 3000",
+    "build": "next build",
+    "start": "next start -p 3000",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@coin-economy/shared": "*",
+    "@tailwindcss/forms": "^0.5.11",
+    "@types/js-cookie": "^3.0.6",
+    "autoprefixer": "^10.5.0",
+    "js-cookie": "^3.0.5",
+    "lucide-react": "^1.8.0",
+    "next": "14.2.5",
+    "postcss": "^8.4.31",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "socket.io-client": "^4.8.3",
+    "tailwindcss": "^3.4.19"
+  },
+  "devDependencies": {
+    "@types/node": "^22.5.0",
+    "@types/react": "^18.3.4",
+    "@types/react-dom": "^18.3.0",
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
+    "eslint": "^8.57.0",
+    "eslint-config-next": "14.2.5",
+    "eslint-config-prettier": "^9.1.0",
+    "typescript": "^5.5.4"
+  }
+}

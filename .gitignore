@@ -1,0 +1,8 @@
+node_modules/
+.env
+.env.local
+dist/
+.next/
+*.log
+apps/api/public/uploads/
+apps/api/prisma/migrations/

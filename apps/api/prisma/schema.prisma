@@ -1,0 +1,222 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Enums ───────────────────────────────────────────────────────────────────
+
+enum UserRole {
+  USER
+  SUPPORT_AGENT
+  ADMIN
+}
+
+enum BusinessStatus {
+  PENDING
+  ACTIVE
+}
+
+enum WalletOwner {
+  USER
+  BUSINESS
+}
+
+enum TransactionType {
+  COIN_RECHARGE
+  DIAMOND_RECHARGE
+  DONATION
+  PRODUCT_PURCHASE
+  MARKETPLACE_SALE
+  MARKETPLACE_PURCHASE
+  OFFER_CANCEL_RETURN
+  DIAMOND_REFUND
+  INCENTIVE_DISTRIBUTION
+}
+
+enum OfferVisibility {
+  PUBLICA
+  PRIVADA
+}
+
+enum OfferStatus {
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+enum TicketStatus {
+  ABIERTO
+  EN_PROGRESO
+  RESUELTO
+  CERRADO
+}
+
+// ─── Models ──────────────────────────────────────────────────────────────────
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  username      String    @unique
+  passwordHash  String
+  name          String?
+  profilePhoto  String?
+  socialLinks   Json?     // { instagram?, facebook?, tiktok?, whatsapp?, website? }
+  isLocked      Boolean   @default(false)
+  lockedUntil   DateTime?
+  failedLogins  Int       @default(0)
+  emailVerified Boolean   @default(false)
+  role          UserRole  @default(USER)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  wallet        Wallet?        @relation("UserWallet")
+  businesses    Business[]
+  offers        Offer[]
+  follows       Follow[]       @relation("Follower")
+  followedBy    Follow[]       @relation("Following")
+  notifications Notification[]
+  tickets       Ticket[]
+}
+
+model Business {
+  id           String         @id @default(uuid())
+  ownerId      String
+  name         String
+  description  String
+  category     String
+  address      String
+  latitude     Float
+  longitude    Float
+  profilePhoto String?
+  coverPhoto   String?
+  socialLinks  Json?
+  status       BusinessStatus @default(PENDING)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  owner    User     @relation(fields: [ownerId], references: [id])
+  wallet   Wallet?  @relation("BusinessWallet")
+  products Product[]
+  follows  Follow[] @relation("FollowedBusiness")
+}
+
+model Wallet {
+  id             String      @id @default(uuid())
+  ownerType      WalletOwner
+  userId         String?     @unique
+  businessId     String?     @unique
+  coinBalance    Decimal     @default(0) @db.Decimal(18, 4)
+  diamondBalance Decimal     @default(0) @db.Decimal(18, 4)
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  user         User?         @relation("UserWallet", fields: [userId], references: [id])
+  business     Business?     @relation("BusinessWallet", fields: [businessId], references: [id])
+  transactions Transaction[] @relation("FromWallet")
+  received     Transaction[] @relation("ToWallet")
+}
+
+model Transaction {
+  id            String          @id @default(uuid())
+  type          TransactionType
+  fromWalletId  String?
+  toWalletId    String?
+  coinAmount    Decimal?        @db.Decimal(18, 4)
+  diamondAmount Decimal?        @db.Decimal(18, 4)
+  copAmount     Decimal?        @db.Decimal(18, 2)
+  platformFee   Decimal?        @db.Decimal(18, 2)
+  incentiveFund Decimal?        @db.Decimal(18, 2)
+  metadata      Json?
+  createdAt     DateTime        @default(now())
+
+  fromWallet Wallet? @relation("FromWallet", fields: [fromWalletId], references: [id])
+  toWallet   Wallet? @relation("ToWallet", fields: [toWalletId], references: [id])
+}
+
+model Product {
+  id          String   @id @default(uuid())
+  businessId  String
+  name        String
+  description String
+  imageUrl    String?
+  coinPrice   Decimal  @db.Decimal(18, 4)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  business Business @relation(fields: [businessId], references: [id])
+}
+
+model Offer {
+  id                  String          @id @default(uuid())
+  sellerId            String
+  coinAmount          Decimal         @db.Decimal(18, 4)
+  diamondPricePerCoin Decimal         @db.Decimal(18, 4)
+  visibility          OfferVisibility @default(PUBLICA)
+  accessCode          String?         @unique
+  status              OfferStatus     @default(ACTIVE)
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+
+  seller User @relation(fields: [sellerId], references: [id])
+}
+
+model Follow {
+  id             String   @id @default(uuid())
+  followerId     String
+  followedUserId String?
+  followedBizId  String?
+  createdAt      DateTime @default(now())
+
+  follower     User      @relation("Follower", fields: [followerId], references: [id])
+  followedUser User?     @relation("Following", fields: [followedUserId], references: [id])
+  followedBiz  Business? @relation("FollowedBusiness", fields: [followedBizId], references: [id])
+
+  @@unique([followerId, followedUserId])
+  @@unique([followerId, followedBizId])
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  type      String
+  payload   Json
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model Ticket {
+  id          String       @id @default(uuid())
+  requesterId String
+  description String
+  status      TicketStatus @default(ABIERTO)
+  rating      Int?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  requester User @relation(fields: [requesterId], references: [id])
+}
+
+model IncentiveFund {
+  id          String   @id @default(uuid())
+  coinBalance Decimal  @default(0) @db.Decimal(18, 4)
+  updatedAt   DateTime @updatedAt
+}
+
+model RankingSnapshot {
+  id         String   @id @default(uuid())
+  type       String   // RankingType enum value
+  year       Int
+  weekNumber Int
+  entries    Json     // [{ position, entityId, entityType, metricValue }]
+  createdAt  DateTime @default(now())
+}

@@ -1,0 +1,37 @@
+// Recharge constants
+export const COIN_RECHARGE_COP = 50_000
+export const COIN_RECHARGE_PLATFORM_FEE_COP = 12_500
+export const COIN_RECHARGE_INCENTIVE_FUND_COP = 2_500
+export const COIN_RECHARGE_NET_COP = 35_000
+export const COIN_PRICE_COP = 150
+export const COIN_RECHARGE_AMOUNT = Math.floor(COIN_RECHARGE_NET_COP / COIN_PRICE_COP) // 233
+
+export const DIAMOND_RECHARGE_COP = 25_000
+export const DIAMOND_RECHARGE_PLATFORM_FEE_COP = 6_250
+export const DIAMOND_RECHARGE_INCENTIVE_FUND_COP = 1_250
+export const DIAMOND_RECHARGE_NET_COP = 17_500
+export const DIAMOND_PRICE_COP = 250
+export const DIAMOND_RECHARGE_AMOUNT = Math.floor(DIAMOND_RECHARGE_NET_COP / DIAMOND_PRICE_COP) // 70
+
+// Incentive Fund: coins credited per recharge
+export const INCENTIVE_FUND_COINS_PER_COIN_RECHARGE = Math.floor(
+  COIN_RECHARGE_INCENTIVE_FUND_COP / COIN_PRICE_COP,
+) // 16
+export const INCENTIVE_FUND_COINS_PER_DIAMOND_RECHARGE = Math.floor(
+  DIAMOND_RECHARGE_INCENTIVE_FUND_COP / COIN_PRICE_COP,
+) // 8
+
+// Diamond refund
+export const DIAMOND_REFUND_RATE_COP = 250
+export const DIAMOND_REFUND_MIN = 200
+export const DIAMOND_REFUND_MAX = 500
+
+// Business limits
+export const MAX_BUSINESSES_PER_USER = 3
+
+// Ranking threshold
+export const ACTIVE_BUSINESS_THRESHOLD = 500
+
+// Account lock
+export const MAX_FAILED_LOGINS = 5
+export const ACCOUNT_LOCK_DURATION_MINUTES = 15
