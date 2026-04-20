@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '../../../lib/auth-context'
 import { Camera } from 'lucide-react'
@@ -22,8 +22,13 @@ export default function EditProfilePage() {
   const [uploadingPhoto, setUploadingPhoto] = useState(false)
   const [msg, setMsg] = useState('')
 
+  useEffect(() => {
+    if (!token && !user) {
+      router.push('/login')
+    }
+  }, [token, user, router])
+
   if (!token || !user) {
-    router.push('/login')
     return null
   }
 
