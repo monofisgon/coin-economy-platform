@@ -22,5 +22,10 @@
   "devDependencies": {
     "prettier": "^3.3.3",
     "fast-check": "^3.22.0"
+  },
+  "overrides": {
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "styled-jsx": "5.1.1"
   }
 }
