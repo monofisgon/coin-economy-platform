@@ -1,39 +1,35 @@
-/** @type {import('pm2').StartOptions[]} */
 module.exports = {
   apps: [
     {
-      name: 'api',
-      cwd: 'apps/api',
-      script: 'dist/index.js',
+      name: 'coin-economy-api',
+      script: 'apps/api/dist/index.js',
+      cwd: '/var/www/coin-economy',
       instances: 1,
-      exec_mode: 'fork',
-      max_memory_restart: '500M',
-      restart_delay: 3000,
-      log_date_format: 'YYYY-MM-DD HH:mm:ss',
-      error_file: 'logs/api-error.log',
-      out_file: 'logs/api-out.log',
-      merge_logs: true,
-      env: {
+      autorestart: true,
+      watch: false,
+      max_memory_restart: '512M',
+      env_production: {
         NODE_ENV: 'production',
-        PORT: 4000,
       },
+      error_file: '/var/log/pm2/coin-economy-api-error.log',
+      out_file: '/var/log/pm2/coin-economy-api-out.log',
+      log_date_format: 'YYYY-MM-DD HH:mm:ss',
     },
     {
-      name: 'web',
-      cwd: 'apps/web',
+      name: 'coin-economy-web',
       script: 'node_modules/.bin/next',
       args: 'start -p 3000',
+      cwd: '/var/www/coin-economy/apps/web',
       instances: 1,
-      exec_mode: 'fork',
-      max_memory_restart: '500M',
-      restart_delay: 3000,
-      log_date_format: 'YYYY-MM-DD HH:mm:ss',
-      error_file: 'logs/web-error.log',
-      out_file: 'logs/web-out.log',
-      merge_logs: true,
-      env: {
+      autorestart: true,
+      watch: false,
+      max_memory_restart: '512M',
+      env_production: {
         NODE_ENV: 'production',
       },
+      error_file: '/var/log/pm2/coin-economy-web-error.log',
+      out_file: '/var/log/pm2/coin-economy-web-out.log',
+      log_date_format: 'YYYY-MM-DD HH:mm:ss',
     },
   ],
-};
+}
