@@ -78,7 +78,7 @@ export default function EditProfilePage() {
       })
       if (!res.ok) throw new Error('Error al actualizar')
       setMsg('¡Perfil actualizado correctamente!')
-      setTimeout(() => router.push(`/profile/${user.username}`), 1200)
+      setTimeout(() => router.push(`/profile/${user!.username}`), 1200)
     } catch {
       setMsg('Error al actualizar el perfil.')
     } finally {
