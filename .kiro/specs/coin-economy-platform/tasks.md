@@ -406,6 +406,149 @@ Implementación incremental del monolito modular en TypeScript con Next.js 14 (w
 - [x] 18. Checkpoint final — Integración completa y todos los tests pasan
   - Ensure all tests pass, ask the user if questions arise.
 
+## BUGFIX: Error "Failed to fetch" en Registro de Usuarios
+
+- [ ] 19. Escribir test de exploración de bug condition
+  - **Property 1: Bug Condition** - Error "Failed to fetch" en Registro
+  - **CRÍTICO**: Este test DEBE FALLAR en código no arreglado - la falla confirma que el bug existe
+  - **NO intentar arreglar el test o el código cuando falle**
+  - **NOTA**: Este test codifica el comportamiento esperado - validará el fix cuando pase después de la implementación
+  - **OBJETIVO**: Exponer contraejemplos que demuestren el bug existe
+  - **Enfoque PBT Acotado**: Para bugs determinísticos, acotar la propiedad a los casos concretos que fallan para asegurar reproducibilidad
+  - Crear test en `apps/web/src/lib/__tests__/api-connectivity.test.ts`
+  - Probar que `api.register()` con datos válidos (email: "monofisgon@gmail.com", username: "Cristian", name: "Avilez", password válida) complete exitosamente
+  - Verificar que la llamada HTTP llegue al backend sin "Failed to fetch"
+  - Verificar que se retorne AuthResponse con user y token válidos
+  - Ejecutar test en código NO ARREGLADO
+  - **RESULTADO ESPERADO**: Test FALLA con "Failed to fetch" (esto es correcto - prueba que el bug existe)
+  - Documentar contraejemplos específicos encontrados (URL utilizada, error exacto, headers enviados)
+  - Marcar tarea completa cuando el test esté escrito, ejecutado, y la falla documentada
+  - _Requirements: 1.1, 1.2_
+
+- [ ] 20. Escribir tests de preservación de propiedades (ANTES de implementar fix)
+  - **Property 2: Preservation** - Validaciones de Error Existentes
+  - **IMPORTANTE**: Seguir metodología de observación-primero
+  - Crear tests en `apps/web/src/lib/__tests__/api-preservation.test.ts`
+  - Observar comportamiento en código NO ARREGLADO para entradas no buggy:
+    - Email duplicado debe retornar error específico de validación
+    - Username duplicado debe retornar error específico de validación
+    - Email mal formateado debe retornar error de validación
+    - Contraseña muy corta debe retornar error de validación
+  - Escribir property-based tests capturando estos patrones de comportamiento
+  - Generar datos aleatorios inválidos y verificar que los errores sean consistentes
+  - Ejecutar tests en código NO ARREGLADO
+  - **RESULTADO ESPERADO**: Tests PASAN (esto confirma comportamiento base a preservar)
+  - Marcar tarea completa cuando los tests estén escritos, ejecutados, y pasando en código no arreglado
+  - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5_
+
+- [ ] 21. Fix para error "Failed to fetch" en registro de usuarios
+
+  - [ ] 21.1 Diagnosticar y verificar conectividad entre servicios
+    - Verificar que el backend Fastify esté ejecutándose en puerto 4000: `curl http://localhost:4000/health`
+    - Verificar que el frontend Next.js esté ejecutándose en puerto 3000
+    - Probar conectividad directa al endpoint de registro: `curl -X POST http://localhost:4000/api/auth/register -H "Content-Type: application/json" -d '{"email":"test@test.com","username":"test","password":"12345678"}'`
+    - Verificar logs del servidor Fastify para ver si las requests llegan desde el frontend
+    - Verificar en DevTools del navegador: Network tab, Console errors, request headers y response
+    - Documentar hallazgos específicos sobre la causa raíz (¿llega la request? ¿qué error exacto se ve?)
+    - _Bug_Condition: isBugCondition(input) donde fetch_request_to_backend FAILS con "Failed to fetch"_
+    - _Expected_Behavior: api.register() completa exitosamente para datos válidos_
+    - _Preservation: Validaciones de error existentes deben mantenerse sin cambios_
+    - _Requirements: 1.1, 1.2, 2.1, 2.2_
+
+  - [ ] 21.2 Corregir configuración de CORS en el backend
+    - Modificar `apps/api/src/index.ts` línea 47: cambiar `{ origin: true, credentials: true }`
+    - Cambiar a origins específicos: `{ origin: ['http://localhost:3000', 'http://127.0.0.1:3000'], credentials: true }`
+    - Agregar logging para requests CORS rechazados:
+      ```typescript
+      await app.register(cors, {
+        origin: ['http://localhost:3000', 'http://127.0.0.1:3000'],
+        credentials: true,
+        optionsSuccessStatus: 200
+      })
+      ```
+    - Verificar que headers `Content-Type: application/json` estén permitidos por defecto
+    - Probar que requests desde frontend sean aceptados sin errores CORS
+    - _Bug_Condition: CORS mal configurado rechaza requests del frontend_
+    - _Expected_Behavior: CORS permite requests desde localhost:3000_
+    - _Preservation: Otras configuraciones de CORS no deben cambiar_
+    - _Requirements: 1.1, 2.1_
+
+  - [ ] 21.3 Validar y corregir configuración de variables de entorno
+    - Verificar que `NEXT_PUBLIC_API_URL=http://localhost:4000` esté en `apps/web/.env.local` (ya está correcto)
+    - Agregar validación en `apps/web/src/lib/api.ts` línea 1:
+      ```typescript
+      const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000'
+      
+      // Validar URL al inicializar
+      if (typeof window !== 'undefined') {
+        console.log('[API] Using API_BASE:', API_BASE)
+        if (!API_BASE.startsWith('http')) {
+          console.error('[API] Invalid API_BASE URL:', API_BASE)
+        }
+      }
+      ```
+    - Agregar logging en función `request()` para debug de URLs utilizadas
+    - Verificar que la URL sea accesible desde el navegador
+    - _Bug_Condition: NEXT_PUBLIC_API_URL mal configurada o inaccesible_
+    - _Expected_Behavior: API URL correcta permite conectividad_
+    - _Preservation: Otras variables de entorno no deben cambiar_
+    - _Requirements: 1.1, 2.1_
+
+  - [ ] 21.4 Mejorar manejo de errores de conectividad en el frontend
+    - Modificar función `request()` en `apps/web/src/lib/api.ts` líneas 3-15:
+      ```typescript
+      async function request<T>(path: string, options: RequestInit = {}, token?: string): Promise<T> {
+        const headers: Record<string, string> = {
+          'Content-Type': 'application/json',
+          ...(options.headers as Record<string, string>),
+        }
+        if (token) headers['Authorization'] = `Bearer ${token}`
+      
+        try {
+          const res = await fetch(`${API_BASE}${path}`, { ...options, headers })
+          const data = await res.json()
+          if (!res.ok) throw { status: res.status, code: data.code, message: data.message ?? 'Error desconocido' }
+          return data as T
+        } catch (err) {
+          // Diferenciar errores de conectividad vs errores HTTP
+          if (err instanceof TypeError && err.message.includes('fetch')) {
+            throw { status: 0, code: 'NETWORK_ERROR', message: 'Error de conectividad. Verifica que el servidor esté ejecutándose.' }
+          }
+          throw err
+        }
+      }
+      ```
+    - Implementar retry logic básico para requests fallidos (máximo 2 reintentos con delay)
+    - Proporcionar mensajes de error más descriptivos para problemas de conectividad
+    - _Bug_Condition: Errores de red no son manejados apropiadamente_
+    - _Expected_Behavior: Errores de conectividad muestran mensajes claros_
+    - _Preservation: Manejo de errores HTTP existente no debe cambiar_
+    - _Requirements: 1.1, 2.1, 2.2_
+
+  - [ ] 21.5 Verificar test de exploración de bug condition ahora pasa
+    - **Property 1: Expected Behavior** - Registro Exitoso con Conectividad
+    - **IMPORTANTE**: Re-ejecutar el MISMO test de la tarea 19 - NO escribir un test nuevo
+    - El test de la tarea 19 codifica el comportamiento esperado
+    - Cuando este test pase, confirma que el comportamiento esperado se satisface
+    - Ejecutar `npm test apps/web/src/lib/__tests__/api-connectivity.test.ts`
+    - **RESULTADO ESPERADO**: Test PASA (confirma que el bug está arreglado)
+    - Verificar que `api.register()` retorne AuthResponse válido sin "Failed to fetch"
+    - _Requirements: Propiedades de Comportamiento Esperado del diseño_
+
+  - [ ] 21.6 Verificar que tests de preservación aún pasan
+    - **Property 2: Preservation** - Validaciones de Error Existentes
+    - **IMPORTANTE**: Re-ejecutar los MISMOS tests de la tarea 20 - NO escribir tests nuevos
+    - Ejecutar `npm test apps/web/src/lib/__tests__/api-preservation.test.ts`
+    - **RESULTADO ESPERADO**: Tests PASAN (confirma que no hay regresiones)
+    - Confirmar que todas las validaciones de error existentes continúan funcionando
+    - Verificar que emails duplicados, usernames duplicados, y datos inválidos aún retornen errores apropiados
+
+- [ ] 22. Checkpoint - Asegurar que todos los tests pasan
+  - Ejecutar suite completa de tests: `npm test`
+  - Verificar que el registro de usuarios funcione end-to-end en el navegador
+  - Probar casos específicos: registro exitoso, email duplicado, username duplicado, datos inválidos
+  - Ensure all tests pass, ask the user if questions arise.
+
 ## Notes
 
 - Las tareas marcadas con `*` son opcionales y pueden omitirse para un MVP más rápido

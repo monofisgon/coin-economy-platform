@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { TransactionType, WalletOwner, BusinessStatus } from '@prisma/client'
 import { WalletService, simulatePayment } from './wallet.service'
-import { COIN_RECHARGE_AMOUNT } from '@coin-economy/shared'
+import { COIN_RECHARGE_AMOUNT } from '@krowdco/shared'
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 

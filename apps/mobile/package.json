@@ -1,5 +1,5 @@
 {
-  "name": "@coin-economy/mobile",
+  "name": "@krowdco/mobile",
   "version": "1.0.0",
   "private": true,
   "main": "expo-router/entry",
@@ -10,7 +10,7 @@
     "lint": "eslint . --ext .ts,.tsx"
   },
   "dependencies": {
-    "@coin-economy/shared": "*",
+    "@krowdco/shared": "*",
     "expo": "~51.0.28",
     "expo-router": "~3.5.23",
     "expo-status-bar": "~1.12.1",

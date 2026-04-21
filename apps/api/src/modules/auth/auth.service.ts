@@ -1,6 +1,6 @@
 import { PrismaClient, User, WalletOwner } from '@prisma/client'
 import * as crypto from 'crypto'
-import { MAX_FAILED_LOGINS, ACCOUNT_LOCK_DURATION_MINUTES } from '@coin-economy/shared'
+import { MAX_FAILED_LOGINS, ACCOUNT_LOCK_DURATION_MINUTES } from '@krowdco/shared'
 import type { RegisterDTO, LoginDTO, UpdateProfileDTO } from './auth.schema'
 
 // bcrypt is loaded dynamically to allow testing without native bindings

@@ -14,7 +14,7 @@ import {
   DIAMOND_REFUND_RATE_COP,
   DIAMOND_REFUND_MIN,
   DIAMOND_REFUND_MAX,
-} from '@coin-economy/shared'
+} from '@krowdco/shared'
 
 // ─── Pure calculation helpers (extracted from WalletService logic) ─────────────
 

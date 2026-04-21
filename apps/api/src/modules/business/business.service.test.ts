@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { BusinessStatus, WalletOwner } from '@prisma/client'
 import { BusinessService } from './business.service'
-import { MAX_BUSINESSES_PER_USER } from '@coin-economy/shared'
+import { MAX_BUSINESSES_PER_USER } from '@krowdco/shared'
 
 // Minimal Prisma mock
 function makePrismaMock() {

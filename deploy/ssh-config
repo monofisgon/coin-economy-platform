@@ -1,0 +1,13 @@
+# Configuración SSH para Hostinger VPS
+# Agregar al archivo ~/.ssh/config o usar directamente
+
+Host hostinger-vps
+    HostName 2.24.215.174
+    User root
+    Port 22
+    IdentityFile ~/.ssh/hostinger_deploy_key
+    StrictHostKeyChecking no
+    UserKnownHostsFile /dev/null
+    ConnectTimeout 30
+    ServerAliveInterval 60
+    ServerAliveCountMax 3

@@ -6,3 +6,38 @@ dist/
 *.log
 apps/api/public/uploads/
 apps/api/prisma/migrations/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Debug and test files
+debug-*.html
+test-*.js
+*.debug.js
+
+# Docker files (not used)
+docker-compose*.yml
+Dockerfile*
+
+# Backup files
+*.backup
+*.bak
+*.tmp
+
+# Deployment files
+deploy/.env.deploy
+logs/
+*.log

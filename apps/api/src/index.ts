@@ -39,7 +39,11 @@ declare module 'fastify' {
 
 async function bootstrap() {
   // Register plugins
-  await app.register(cors, { origin: true, credentials: true })
+  await app.register(cors, {
+    origin: ['http://localhost:3000', 'http://127.0.0.1:3000', 'https://www.krowdco.com', 'https://krowdco.com'],
+    credentials: true,
+    optionsSuccessStatus: 200
+  })
   await app.register(jwt, { secret: env.JWT_SECRET })
   await app.register(multipart, { limits: { fileSize: 5 * 1024 * 1024 } }) // 5MB max
   await app.register(staticFiles, {

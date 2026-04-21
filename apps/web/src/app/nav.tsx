@@ -23,7 +23,7 @@ export default function Nav() {
         {/* Logo */}
         <Link href="/" className="flex items-center gap-1.5 font-bold text-blue-600 text-lg shrink-0">
           <Coins className="w-5 h-5" />
-          CoinEconomy
+          Krowdco
         </Link>
 
         {/* Desktop links */}

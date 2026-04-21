@@ -3,7 +3,7 @@ import ClientLayout from './client-layout'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Coin Economy Platform',
+  title: 'Krowdco',
   description: 'Plataforma de economía de monedas virtuales',
 }
 

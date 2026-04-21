@@ -1,5 +1,5 @@
 import { PrismaClient, Business, BusinessStatus, WalletOwner } from '@prisma/client'
-import { MAX_BUSINESSES_PER_USER } from '@coin-economy/shared'
+import { MAX_BUSINESSES_PER_USER } from '@krowdco/shared'
 import type { CreateBusinessDTO, UpdateBusinessDTO } from './business.schema'
 
 export interface BusinessProfile {

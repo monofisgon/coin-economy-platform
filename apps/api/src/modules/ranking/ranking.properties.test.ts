@@ -1,7 +1,7 @@
 import { describe, test, expect } from 'vitest'
 import fc from 'fast-check'
 import { RankingService, type RankingType } from './ranking.service'
-import { ACTIVE_BUSINESS_THRESHOLD } from '@coin-economy/shared'
+import { ACTIVE_BUSINESS_THRESHOLD } from '@krowdco/shared'
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 

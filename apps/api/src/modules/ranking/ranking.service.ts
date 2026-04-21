@@ -1,6 +1,6 @@
 import { PrismaClient, BusinessStatus, TransactionType } from '@prisma/client'
 import { Prisma } from '@prisma/client'
-import { ACTIVE_BUSINESS_THRESHOLD } from '@coin-economy/shared'
+import { ACTIVE_BUSINESS_THRESHOLD } from '@krowdco/shared'
 
 export type RankingType =
   | 'USER_COINS_SOLD'

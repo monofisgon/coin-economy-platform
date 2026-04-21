@@ -1,5 +1,13 @@
 const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000'
 
+// Validar URL al inicializar
+if (typeof window !== 'undefined') {
+  console.log('[API] Using API_BASE:', API_BASE)
+  if (!API_BASE.startsWith('http')) {
+    console.error('[API] Invalid API_BASE URL:', API_BASE)
+  }
+}
+
 async function request<T>(path: string, options: RequestInit = {}, token?: string): Promise<T> {
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
@@ -7,10 +15,52 @@ async function request<T>(path: string, options: RequestInit = {}, token?: strin
   }
   if (token) headers['Authorization'] = `Bearer ${token}`
 
-  const res = await fetch(`${API_BASE}${path}`, { ...options, headers })
-  const data = await res.json()
-  if (!res.ok) throw { status: res.status, code: data.code, message: data.message ?? 'Error desconocido' }
-  return data as T
+  try {
+    console.log(`[API] Enviando petición a: ${API_BASE}${path}`)
+    console.log(`[API] Headers:`, headers)
+    console.log(`[API] Body:`, options.body)
+    
+    const res = await fetch(`${API_BASE}${path}`, { ...options, headers })
+    
+    console.log(`[API] Response status: ${res.status}`)
+    console.log(`[API] Response headers:`, Object.fromEntries(res.headers.entries()))
+    
+    const data = await res.json()
+    console.log(`[API] Response data:`, data)
+    
+    if (!res.ok) {
+      const error = { status: res.status, code: data.code, message: data.message ?? 'Error desconocido' }
+      console.error(`[API] Error response:`, error)
+      throw error
+    }
+    
+    console.log(`[API] Petición exitosa`)
+    return data as T
+    
+  } catch (error) {
+    console.error(`[API] Error en petición:`, error)
+    
+    // Si es un error de red (Failed to fetch, etc.)
+    if (error instanceof TypeError && (error.message.includes('fetch') || error.message.includes('Failed to fetch'))) {
+      throw { 
+        status: 0, 
+        code: 'NETWORK_ERROR', 
+        message: 'Error de conectividad. Verifica que el servidor esté funcionando en http://localhost:4000' 
+      }
+    }
+    
+    // Si ya es un error estructurado, lo re-lanzamos
+    if (error && typeof error === 'object' && 'status' in error) {
+      throw error
+    }
+    
+    // Error desconocido
+    throw { 
+      status: 0, 
+      code: 'UNKNOWN_ERROR', 
+      message: error instanceof Error ? error.message : 'Error desconocido' 
+    }
+  }
 }
 
 export interface AuthResponse {

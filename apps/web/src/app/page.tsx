@@ -70,7 +70,7 @@ export default function HomePage() {
     <div className="max-w-4xl mx-auto">
       {/* Hero */}
       <div className="text-center py-10 mb-8">
-        <h1 className="text-4xl font-bold text-gray-900 mb-3">Coin Economy Platform</h1>
+        <h1 className="text-4xl font-bold text-gray-900 mb-3">Krowdco</h1>
         <p className="text-gray-500 text-lg max-w-xl mx-auto">
           La plataforma que conecta negocios físicos con sus clientes a través de una economía de monedas virtuales.
         </p>

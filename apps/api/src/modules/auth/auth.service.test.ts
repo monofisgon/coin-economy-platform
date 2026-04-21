@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { AuthService } from './auth.service'
-import { MAX_FAILED_LOGINS, ACCOUNT_LOCK_DURATION_MINUTES } from '@coin-economy/shared'
+import { MAX_FAILED_LOGINS, ACCOUNT_LOCK_DURATION_MINUTES } from '@krowdco/shared'
 
 // ─── Minimal Prisma mock ──────────────────────────────────────────────────────
 

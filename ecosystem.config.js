@@ -1,35 +1,37 @@
 module.exports = {
   apps: [
     {
-      name: 'coin-economy-api',
-      script: 'apps/api/dist/index.js',
-      cwd: '/var/www/coin-economy',
+      name: 'krowdco-api',
+      script: 'dist/index.js',
+      cwd: './apps/api',
       instances: 1,
-      autorestart: true,
-      watch: false,
-      max_memory_restart: '512M',
-      env_production: {
+      exec_mode: 'fork',
+      env: {
         NODE_ENV: 'production',
+        PORT: 4000,
+        HOST: '127.0.0.1'
       },
-      error_file: '/var/log/pm2/coin-economy-api-error.log',
-      out_file: '/var/log/pm2/coin-economy-api-out.log',
-      log_date_format: 'YYYY-MM-DD HH:mm:ss',
+      error_file: './logs/api-error.log',
+      out_file: './logs/api-out.log',
+      log_file: './logs/api-combined.log',
+      time: true
     },
     {
-      name: 'coin-economy-web',
-      script: 'node_modules/.bin/next',
+      name: 'krowdco-web',
+      script: 'node_modules/next/dist/bin/next',
       args: 'start -p 3000',
-      cwd: '/var/www/coin-economy/apps/web',
+      cwd: './apps/web',
       instances: 1,
-      autorestart: true,
-      watch: false,
-      max_memory_restart: '512M',
-      env_production: {
+      exec_mode: 'fork',
+      env: {
         NODE_ENV: 'production',
+        PORT: 3000,
+        NEXT_PUBLIC_API_URL: 'https://www.krowdco.com'
       },
-      error_file: '/var/log/pm2/coin-economy-web-error.log',
-      out_file: '/var/log/pm2/coin-economy-web-out.log',
-      log_date_format: 'YYYY-MM-DD HH:mm:ss',
-    },
-  ],
+      error_file: './logs/web-error.log',
+      out_file: './logs/web-out.log',
+      log_file: './logs/web-combined.log',
+      time: true
+    }
+  ]
 }
