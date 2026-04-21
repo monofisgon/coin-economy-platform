@@ -72,7 +72,7 @@ export default function HomePage() {
       <div className="text-center py-10 mb-8">
         <h1 className="text-4xl font-bold text-gray-900 mb-3">Krowdco</h1>
         <p className="text-gray-500 text-lg max-w-xl mx-auto">
-          Conectamos negocios físicos con sus clientes a través de una economía de monedas virtuales innovadora.
+          🚀 Conectamos negocios físicos con sus clientes a través de una economía de monedas virtuales innovadora.
         </p>
         {!user && (
           <div className="flex items-center justify-center gap-3 mt-6">
