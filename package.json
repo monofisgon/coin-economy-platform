@@ -18,7 +18,7 @@
     "db:generate": "npm run db:generate --workspace=apps/api",
     "db:migrate": "npm run db:migrate --workspace=apps/api",
     "test": "npm run test --workspaces --if-present",
-    "deploy:production": "powershell -ExecutionPolicy Bypass -File scripts/deploy-to-production.ps1",
+    "deploy:production": "powershell -ExecutionPolicy Bypass -File scripts/simple-deploy.ps1",
     "deploy:check": "powershell -ExecutionPolicy Bypass -File scripts/check-deploy.ps1",
     "deploy:health": "powershell -ExecutionPolicy Bypass -File scripts/health-check.ps1",
     "deploy:rollback": "powershell -ExecutionPolicy Bypass -File scripts/rollback-production.ps1"
